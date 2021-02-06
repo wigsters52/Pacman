@@ -2,6 +2,7 @@ const width = 28
 const grid = document.querySelector('.grid')
 const scoreDisplay = document.getElementById('score')
 let squares = []
+let score = 0
 
 const layout = [
     1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
@@ -64,22 +65,70 @@ function control(e) {
     switch (e.keyCode) {
         case 40:
             console.log('pressed down')
-            if (pacmanCurrentIndex + width < width * width) pacmanCurrentIndex += width
+            if (!squares[pacmanCurrentIndex + width].classList.contains('ghost-lair') &&
+                !squares[pacmanCurrentIndex + width].classList.contains('wall') &&
+                pacmanCurrentIndex + width < width * width
+            )
+                pacmanCurrentIndex += width
             break
         case 38:
             console.log('pressed up')
-            if (pacmanCurrentIndex - width >= 0) pacmanCurrentIndex -= width
+            if (!squares[pacmanCurrentIndex - width].classList.contains('ghost-lair') &&
+                !squares[pacmanCurrentIndex - width].classList.contains('wall') &&
+                pacmanCurrentIndex - width >= 0
+            )
+                pacmanCurrentIndex -= width
             break
         case 37:
             console.log('pressed left')
-            if (pacmanCurrentIndex % width !== 0) pacmanCurrentIndex -= 1
+            if (!squares[pacmanCurrentIndex - 1].classList.contains('ghost-lair') &&
+                !squares[pacmanCurrentIndex - 1].classList.contains('wall') &&
+                pacmanCurrentIndex % width !== 0
+            )
+                pacmanCurrentIndex -= 1
+            if (pacmanCurrentIndex === 364) {
+                pacmanCurrentIndex = 391
+            }
             break
         case 39:
             console.log('pressed right')
-            if (pacmanCurrentIndex % width < width - 1) pacmanCurrentIndex += 1
-
+            if (!squares[pacmanCurrentIndex + 1].classList.contains('ghost-lair') &&
+                !squares[pacmanCurrentIndex + 1].classList.contains('wall') &&
+                pacmanCurrentIndex % width < width - 1
+            )
+                pacmanCurrentIndex += 1
+            if (pacmanCurrentIndex === 391) {
+                pacmanCurrentIndex = 364
+            }
             break
     }
     squares[pacmanCurrentIndex].classList.add('pacman')
+    pacDotEaten()
 }
 document.addEventListener('keyup', control)
+
+
+function pacDotEaten() {
+    if (squares[pacmanCurrentIndex].classList.contains('pac-dot')) {
+        squares[pacmanCurrentIndex].classList.remove('pac-dot')
+        score++
+        scoreDisplay.innerHTML = score
+    }
+}
+
+class Ghost {
+    constructor(className, startIndex, speed) {
+        this.className = className
+        this.startIndex = startIndex
+        this.speed = speed
+    }
+}
+
+const ghosts = [
+    new Ghost('blinky', 348, 250),
+    new Ghost('pinky', 376, 400),
+    new Ghost('inky', 351, 300),
+    new Ghost('clyde', 379, 500)
+]
+
+ghosts.forEach(ghost => squares[ghost.startIndex].classList.add(ghost.className))
